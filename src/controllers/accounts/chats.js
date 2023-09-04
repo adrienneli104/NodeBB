@@ -64,7 +64,9 @@ function get(req, res, next) {
         room.title = room.roomName || room.usernames || '[[pages:chats]]';
         room.uid = uid;
         room.userslug = req.params.userslug;
-        room.canViewInfo = yield privileges_1.default.global.can('view:users:info', uid);
+        // The next line calls a function in a module that has not been updated to TS yet
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+        room.canViewInfo = (yield privileges_1.default.global.can('view:users:info', uid));
         res.render('chats', room);
     });
 }

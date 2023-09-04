@@ -28,7 +28,7 @@ export async function get(req: Request & { uid: number },
 
     // The next line calls a function in a module that has not been updated to TS yet
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-    const recentChats = await messaging.getRecentChats(req.uid, uid, 0, 19);
+    const recentChats: ChatData = await messaging.getRecentChats(req.uid, uid, 0, 19) as ChatData;
     if (!recentChats) {
         return next();
     }
@@ -43,9 +43,20 @@ export async function get(req: Request & { uid: number },
         });
     }
 
+    type ChatData = {
+        rooms: object[],
+        nextStart: number,
+        title: string,
+        uid: number,
+        userslug: string,
+        roomName: string,
+        usernames: string,
+        canViewInfo: boolean
+    }
+
     // The next line calls a function in a module that has not been updated to TS yet
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-    const room = await messaging.loadRoom(req.uid, { uid: uid, roomId: req.params.roomid });
+    const room: ChatData = await messaging.loadRoom(req.uid, { uid: uid, roomId: req.params.roomid }) as ChatData;
     if (!room) {
         return next();
     }
@@ -55,8 +66,9 @@ export async function get(req: Request & { uid: number },
     room.title = room.roomName || room.usernames || '[[pages:chats]]';
     room.uid = uid;
     room.userslug = req.params.userslug;
-
-    room.canViewInfo = await privileges.global.can('view:users:info', uid);
+    // The next line calls a function in a module that has not been updated to TS yet
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+    room.canViewInfo = await privileges.global.can('view:users:info', uid) as boolean;
 
     res.render('chats', room);
 }
